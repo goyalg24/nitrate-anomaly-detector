@@ -1,0 +1,11 @@
+{
+  "W": 1200,
+  "q": 99.0,
+  "two_sided": false,
+  "q_low": 1.0,
+  "one_sided": "upper",
+  "initial_label": "newonly",
+  "plot": "outputs/anomaly_plot_W1200_q99.0_upper_newonly.png",
+  "pred_csv": "outputs/predictions_W1200_q99.0_upper_newonly.csv",
+  "metrics": null
+}
