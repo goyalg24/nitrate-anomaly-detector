@@ -8,11 +8,11 @@ Sliding-window percentile anomaly detection for Nitrate time series.
 - Saves plot, metrics, and (optionally) a README.md filled from a template.
 
 Usage:
-  python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTruth \
+  python src/anomaly_detect.py --data data/data.csv --value-col NO3N --gt-col Student_Flag \
       --W 1200 --q 99.0 --one-sided upper --initial-label newonly --outdir outputs
 
 Optional grid search:
-  python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTruth \
+  python src/anomaly_detect.py --data data/data.csv --value-col NO3N --gt-col Student_Flag \
       --sweep --W-min 500 --W-max 2000 --W-step 250 --q-grid 97,98,98.5,99,99.5 \
       --target-normal 0.80 --target-anomaly 0.75
 
@@ -21,6 +21,7 @@ Author: Gaurav Goyal
 import argparse
 import os
 import json
+from pathlib import Path
 from typing import Tuple, Dict, Optional, List
 import numpy as np
 import pandas as pd
@@ -31,9 +32,26 @@ plt.rcParams.update({'figure.dpi': 140})
 
 TARGET_TOTAL_ANOMALIES = 77  # Provided spec
 
+# Default locations, resolved relative to the repository root (parent of src/)
+# so the script finds data/ and writes to outputs/ wherever it is run from.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _default_path(p: Path) -> str:
+    """Return p relative to the current directory when possible (keeps paths
+    recorded in run JSON / README short, e.g. 'outputs/...'), else absolute."""
+    try:
+        return os.path.relpath(p)
+    except ValueError:  # e.g. different drive on Windows
+        return str(p)
+
+
+DEFAULT_DATA = _default_path(REPO_ROOT / "data" / "data.csv")
+DEFAULT_OUTDIR = _default_path(REPO_ROOT / "outputs")
+
 def parse_args():
     p = argparse.ArgumentParser(description="Sliding-window percentile anomaly detection")
-    p.add_argument("--data", type=str, required=True, help="Path to CSV (e.g., data.csv)")
+    p.add_argument("--data", type=str, default=DEFAULT_DATA, help="Path to CSV (default: data/data.csv)")
     p.add_argument("--value-col", type=str, default="Nitrate", help="Column name for the time series values")
     p.add_argument("--gt-col", type=str, default=None, help="Ground-truth column (0/1). If not given, attempts auto-detect.")
     p.add_argument("--index-col", type=str, default=None, help="Optional index/time column for plotting")
@@ -45,7 +63,7 @@ def parse_args():
                    help="If not --two-sided, choose which tail to flag as anomalies")
     p.add_argument("--initial-label", type=str, choices=["all", "newonly"], default="newonly",
                    help='For the first window: label "all" points or only the newly added one ("newonly")')
-    p.add_argument("--outdir", type=str, default="outputs", help="Directory for outputs")
+    p.add_argument("--outdir", type=str, default=DEFAULT_OUTDIR, help="Directory for outputs (default: outputs/)")
     p.add_argument("--save-readme", action="store_true", help="Fill README.md from template after run")
     # Sweep / search options
     p.add_argument("--sweep", action="store_true", help="Search over W and q grids")

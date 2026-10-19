@@ -60,7 +60,7 @@ Assuming your data file is **`data.csv`** and the Nitrate column is named **`Nit
 
 ```bash
 # Single run (one-sided upper tail), labeling only new points (spec-compliant):
-python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTruth \
+python src/anomaly_detect.py --data data/data.csv --value-col Nitrate --gt-col GroundTruth \
     --W 1200 --q 99.0 --one-sided upper --initial-label newonly \
     --outdir outputs --save-readme
 ```
@@ -68,7 +68,7 @@ python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTrut
 **Optional grid search** over `W` and `q` to hit targets:
 
 ```bash
-python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTruth \
+python src/anomaly_detect.py --data data/data.csv --value-col Nitrate --gt-col GroundTruth \
     --sweep --W-min 500 --W-max 2000 --W-step 250 \
     --q-grid 97,98,98.5,99,99.5 \
     --target-normal 0.80 --target-anomaly 0.75 \
@@ -86,7 +86,7 @@ python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTrut
 
 Two-sided option (if needed):  
 ```bash
-python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTruth \
+python src/anomaly_detect.py --data data/data.csv --value-col Nitrate --gt-col GroundTruth \
     --W 1200 --two-sided --q-low 1.0 --q 99.0 --initial-label newonly --outdir outputs
 ```
 
@@ -96,8 +96,11 @@ python anomaly_detect.py --data data.csv --value-col Nitrate --gt-col GroundTrut
 
 ```
 .
-├── anomaly_detect.py
-├── README_TEMPLATE.md
+├── data/
+│   └── data.csv
+├── src/
+│   ├── anomaly_detect.py
+│   └── README_TEMPLATE.md
 ├── requirements.txt
 └── outputs/
     ├── anomaly_plot_*.png
